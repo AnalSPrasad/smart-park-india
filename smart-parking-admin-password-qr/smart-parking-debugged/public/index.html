@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor Street Garage · Smart parking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --concrete:#eef2f7;
+  --paper:#ffffff;
+  --ink:#14243a;
+  --ink-soft:#64748b;
+  --garage-blue:#0f766e;
+  --bay-free:#22a06b;
+  --bay-busy:#e05252;
+  --bay-held:#e6a23c;
+  --asphalt:#263548;
+  --asphalt-dark:#172538;
+  --paint:#f8fafc;
+  --led:#a7f3d0;
+  --sign:#10243a;
+  --rule:#dbe3ed;
+  --display:"Manrope","DM Sans",system-ui,sans-serif;
+  --text:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:linear-gradient(180deg,#eaf1f7 0%,#f5f8fc 45%,#edf2f7 100%);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.55}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--garage-blue);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* header */
+.top{background:linear-gradient(110deg,#10243a,#0f766e);color:#fff;box-shadow:0 8px 24px rgba(15,35,55,.15)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:14px}
+.psign{display:grid;place-items:center;width:44px;height:44px;border:2px solid rgba(255,255,255,.9);border-radius:14px;background:rgba(255,255,255,.12);font-family:var(--display);font-weight:800;font-size:28px;line-height:1}
+.brand h1{margin:0;font-family:var(--display);font-weight:800;font-size:25px;letter-spacing:-.04em;line-height:1.15}
+.brand p{margin:0;font-size:14px;opacity:.85}
+.clock{font-family:var(--display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* entrance sign */
+.hero{position:relative;margin-top:22px;min-height:250px;border-radius:20px;overflow:hidden;background:#10243a;box-shadow:0 16px 36px rgba(20,36,58,.18)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 57%;opacity:.86}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,25,43,.94) 0%,rgba(9,25,43,.72) 42%,rgba(9,25,43,.08) 100%)}
+.hero-copy{position:relative;z-index:1;max-width:650px;padding:32px 34px;color:#fff}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 11px;border:1px solid rgba(167,243,208,.45);border-radius:99px;background:rgba(15,118,110,.28);color:#a7f3d0;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.hero h2{margin:15px 0 10px;font-family:var(--display);font-size:clamp(30px,4vw,46px);line-height:1.1;letter-spacing:-.045em;font-weight:800}
+.hero p{max-width:490px;margin:0;color:#dce7f1;font-size:16px}
+.vehicle-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.vehicle-tags span{padding:7px 12px;border-radius:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);font-size:13px;font-weight:600}
+.sign{background:var(--sign);color:var(--led);border-radius:16px;margin-top:20px;padding:22px 26px;display:grid;grid-template-columns:auto 1fr;gap:12px 40px;align-items:center;border:1px solid rgba(255,255,255,.12);box-shadow:0 12px 28px rgba(20,36,58,.12)}
+.sign-total{display:flex;align-items:baseline;gap:14px}
+.led-num{font-family:var(--display);font-weight:700;line-height:.9;text-shadow:0 0 14px rgba(255,176,0,.45);font-variant-numeric:tabular-nums}
+.sign-total .led-num{font-size:104px}
+.sign-total span.lbl{font-family:var(--display);font-size:30px;font-weight:500;line-height:1}
+.sign-types{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 20px}
+.sign-types div{border-left:2px solid #3a404a;padding-left:14px}
+.sign-types .led-num{font-size:48px;display:block}
+.sign-types .lbl{font-size:15px;color:#d8a43a}
+.sign-note{grid-column:1/-1;border-top:2px solid #2a2f38;padding-top:10px;font-size:15px;color:#d8a43a;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sign-note b{color:var(--led);font-weight:600}
+
+/* workspace */
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;margin-top:24px;align-items:start}
+.lot-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.floors{display:flex;gap:6px}
+.floor-tab{border:2px solid var(--ink);background:transparent;border-radius:8px;padding:6px 16px 6px;cursor:pointer;font-family:var(--display);font-size:22px;font-weight:600;line-height:1.1}
+.floor-tab small{font-family:var(--text);font-size:13px;font-weight:500;margin-left:6px;color:var(--ink-soft)}
+.floor-tab[aria-selected="true"]{background:var(--ink);color:#fff}
+.floor-tab[aria-selected="true"] small{color:#c9ced6}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+
+.deck{background:linear-gradient(145deg,#263548,#1a293b);border-radius:16px;padding:0 14px;overflow:hidden;box-shadow:0 12px 26px rgba(20,36,58,.14)}
+.row{display:grid;grid-template-columns:repeat(10,1fr);padding-top:14px}
+.row.lower{padding-top:0;padding-bottom:14px}
+.row .bay{border-left:3px solid var(--paint)}
+.row .bay:last-child{border-right:3px solid var(--paint)}
+.aisle{position:relative;height:54px;display:flex;align-items:center;margin:0 -14px;padding:0 14px;color:#b9bec7;font-size:13px}
+.aisle::before{content:"";position:absolute;left:14px;right:14px;top:50%;border-top:3px dashed rgba(246,245,239,.35)}
+.aisle span{position:relative;background:var(--asphalt);padding-right:10px}
+
+.bay{position:relative;height:112px;background:transparent;border:0;border-top:0;padding:14px 4px 6px;color:var(--paint);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center}
+.bay:hover{background:rgba(255,255,255,.07)}
+.bay.sel{background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 3px #7fb2f0}
+.bay .led{position:absolute;top:4px;left:50%;width:22px;height:5px;margin-left:-11px;border-radius:3px;background:var(--bay-free);box-shadow:0 0 8px var(--bay-free)}
+.bay.occupied .led{background:var(--bay-busy);box-shadow:0 0 8px var(--bay-busy)}
+.bay.reserved .led{background:var(--bay-held);box-shadow:0 0 8px var(--bay-held)}
+.bay .num{position:absolute;left:7px;top:12px;font-size:12px;color:#aab0ba;font-variant-numeric:tabular-nums}
+.bay .free-mark{font-size:22px;color:#cfd4dc;min-height:30px}
+.bay.free .free-mark:empty::after{content:"free";font-size:13px;color:#8d95a1}
+.bay .car{display:block;width:54%;height:46px;border-radius:12px 12px 7px 7px;background:hsl(var(--h) 28% 62%);position:relative;margin-top:6px}
+.bay .car::before{content:"";position:absolute;left:12%;right:12%;top:7px;height:13px;border-radius:5px;background:rgba(18,21,26,.55)}
+.bay .car.moto{width:22%}
+.bay .car.moto::before{left:20%;right:20%}
+.bay .plate{font-size:12px;font-weight:600;background:var(--paint);color:var(--ink);padding:0 5px;border-radius:3px;letter-spacing:.02em;max-width:96%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bay .meta{font-size:11px;color:#c4c9d1;line-height:1.15}
+.bay.reserved{background:repeating-linear-gradient(135deg,rgba(224,162,28,.18) 0 8px,rgba(224,162,28,0) 8px 16px)}
+.bay.reserved.sel{background:rgba(255,255,255,.16)}
+
+/* panel */
+.panel{background:var(--paper);border:1px solid #dce5ee;border-radius:16px;padding:20px;position:sticky;top:12px;box-shadow:0 12px 28px rgba(20,36,58,.08)}
+.panel h2{margin:0 0 10px;font-family:var(--display);font-size:24px;font-weight:600;line-height:1.1}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.seg button{border:0;background:transparent;padding:8px 4px;cursor:pointer;font-weight:600;font-size:15px}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button[aria-selected="true"]{background:var(--ink);color:#fff}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+input[type=text],select{width:100%;padding:10px 12px;border:2px solid #b9b6ad;border-radius:8px;background:#fff;min-height:44px}
+input[type=text]{text-transform:uppercase;letter-spacing:.04em}
+input:focus,select:focus{border-color:var(--garage-blue)}
+.bay-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border:2px dashed #b9b6ad;border-radius:8px;background:#fff;min-height:44px;font-size:15px}
+.bay-chip button{border:0;background:none;color:var(--garage-blue);font-weight:600;cursor:pointer;padding:4px}
+.btn{margin-top:16px;width:100%;min-height:48px;border:0;border-radius:10px;background:linear-gradient(110deg,#0f766e,#0d9488);color:#fff;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 5px 12px rgba(15,118,110,.18);transition:transform .15s,box-shadow .15s}
+.btn:hover{background:linear-gradient(110deg,#115e59,#0f766e);transform:translateY(-1px);box-shadow:0 8px 16px rgba(15,118,110,.22)}
+.btn.quiet{background:transparent;color:var(--garage-blue);border:2px solid var(--garage-blue);margin-top:10px}
+.btn.quiet:hover{background:#e3ebf5}
+.selected{border-top:2px solid var(--rule);margin-top:18px;padding-top:14px;font-size:15px}
+.selected h3{margin:0 0 6px;font-family:var(--display);font-size:22px;font-weight:600}
+.selected dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px}
+.selected dt{color:var(--ink-soft)}
+.selected dd{margin:0;font-weight:500}
+.hint{color:var(--ink-soft);margin:0;font-size:15px}
+.receipt{margin-top:16px;border:2px solid var(--ink);border-radius:8px;padding:14px;background:#fff;position:relative}
+.receipt h3{margin:0 0 8px;font-family:var(--display);font-size:22px;font-weight:600}
+.receipt dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:15px}
+.receipt dd{margin:0;text-align:right}
+.receipt .total{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;border-top:2px dashed var(--rule);margin-top:6px;padding-top:8px}
+.receipt .total b{font-family:var(--display);font-size:34px;line-height:1}
+
+/* reports */
+.reports{margin:32px 0 50px;background:#fff;border:1px solid #dce5ee;border-radius:16px;padding:22px;box-shadow:0 12px 28px rgba(20,36,58,.06)}
+.reports h2{font-family:var(--display);font-size:26px;font-weight:600;margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stats div{padding:14px 16px 12px}
+.stats div+div{border-left:2px solid var(--rule)}
+.stats b{display:block;font-family:var(--display);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:14px;color:var(--ink-soft)}
+.fillbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:16px 0 6px;background:#cfccc4}
+.fillbar i{display:block;height:100%}
+.fillkey{font-size:14px;color:var(--ink-soft)}
+.table-scroll{overflow-x:auto;margin-top:22px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-weight:600;color:var(--ink-soft);font-size:14px;border-bottom:2px solid var(--ink)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.empty{color:var(--ink-soft);padding:16px 0}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:8px;font-size:15px;max-width:calc(100% - 32px);z-index:10}
+.toast.error{background:#a8321f}
+.toast[hidden]{display:none}
+
+@media (max-width:960px){
+  .workspace{grid-template-columns:1fr}
+  .panel{position:static}
+  .sign{grid-template-columns:1fr}
+  .hero{min-height:260px}
+  .hero-copy{padding:26px 22px}
+  .hero::after{background:linear-gradient(90deg,rgba(9,25,43,.94),rgba(9,25,43,.55))}
+}
+@media (max-width:700px){
+  .wrap{padding:0 12px}
+  .row{grid-template-columns:repeat(5,1fr)}
+  .row.upper{padding-bottom:0}
+  .sign-total .led-num{font-size:80px}
+  .sign-types{grid-template-columns:repeat(2,1fr)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats div:nth-child(3){border-left:0}
+  .stats div:nth-child(n+3){border-top:2px solid var(--rule)}
+  .brand h1{font-size:21px}
+  .hero{min-height:300px}
+  .hero img{object-position:58% center}
+  .hero h2{font-size:31px}
+  .reports{padding:16px}
+}
+
+.pay-choice{border:1px solid #d5e1ec;border-radius:12px;padding:12px 14px;margin:16px 0;background:#f8fbfd;min-width:0}
+.pay-choice legend{font-weight:800;color:var(--ink);padding:0 5px;font-size:14px}
+.pay-choice label{display:flex;align-items:center;gap:9px;margin:7px 0;font-weight:600;font-size:14px;cursor:pointer}
+.pay-choice input[type=radio]{accent-color:var(--garage-blue);width:16px;height:16px}
+.online-help{margin-top:10px;padding:11px 12px;border-radius:9px;background:#e8f7f4;color:#174e49;font-size:13px;line-height:1.5}
+.online-help a{display:inline-block;margin-top:7px;font-weight:800;color:#0f766e;text-decoration:underline}
+.payment-box{margin-top:16px;padding:16px;border:1px solid #cbd9e7;border-radius:14px;background:linear-gradient(135deg,#f5fbff,#ecfdf8)}
+.payment-box h4{margin:0 0 4px;font:700 17px var(--display);color:#12304a}
+.payment-box p{margin:5px 0 12px;color:#52657a;font-size:13px}
+.payment-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.payment-actions .btn{margin:0}
+.support-link{color:#087f8c;font-weight:700;text-decoration:none;font-size:14px}
+.support-link:hover{text-decoration:underline}
+.payment-note{font-size:12px!important;color:#6b7280!important;margin-top:12px!important}
+.payment-success{margin-top:10px;padding:10px 12px;border-radius:9px;background:#d1fae5;color:#065f46;font-weight:700;font-size:14px}
+.payment-actions .btn:disabled{opacity:.75;cursor:default}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="psign" aria-hidden="true">P</div>
+      <div>
+        <h1>Harbor Street Garage</h1>
+        <p>2 floors, 40 bays, open 24 hours</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><a class="admin-link" href="/admin.html">⚙ Admin dashboard</a><div class="clock" id="clock" aria-label="Current time"></div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" aria-label="Cars, motorcycles and scooters in a modern parking garage">
+    <img src="/vehicle-hero.png" alt="Car, motorcycle and scooter parked in a modern garage">
+    <div class="hero-copy">
+      <span class="eyebrow">● Smart parking management</span>
+      <h2>Park smarter.<br>Move with confidence.</h2>
+      <p>Real-time space availability, quick vehicle check-in and checkout, and simple reservations — all in one place.</p>
+      <div class="vehicle-tags"><span>🚘 Cars</span><span>🏍 Motorcycles</span><span>🛵 Scooters</span><span>⚡ EV bays</span></div>
+    </div>
+  </section>
+
+  <section class="sign" aria-label="Spaces available now">
+    <div class="sign-total">
+      <span class="led-num" id="signTotal">--</span>
+      <span class="lbl">spaces free</span>
+    </div>
+    <div class="sign-types" id="signTypes"></div>
+    <div class="sign-note" id="signNote"></div>
+  </section>
+
+  <div class="workspace">
+    <section aria-label="Garage map">
+      <div class="lot-head">
+        <div class="floors" role="tablist" aria-label="Floor" id="floors"></div>
+        <div class="legend">
+          <span><i style="background:var(--bay-free)"></i>Free</span>
+          <span><i style="background:var(--bay-busy)"></i>Occupied</span>
+          <span><i style="background:var(--bay-held)"></i>Reserved</span>
+        </div>
+      </div>
+      <div class="deck" id="deck"></div>
+    </section>
+
+    <aside class="panel" aria-label="Parking actions">
+      <div class="seg" role="tablist" aria-label="Action">
+        <button role="tab" data-mode="in" aria-selected="true">Check in</button>
+        <button role="tab" data-mode="out" aria-selected="false">Check out</button>
+        <button role="tab" data-mode="reserve" aria-selected="false">Reserve</button>
+      </div>
+
+      <form id="formIn" data-form="in" autocomplete="off">
+        <h2>Check in a vehicle</h2>
+        <label for="inPlate">Licence plate</label>
+        <input type="text" id="inPlate" maxlength="10" placeholder="e.g. TQX-482" required>
+        <label for="inType">Vehicle type</label>
+        <select id="inType">
+          <option value="CAR">Car</option>
+          <option value="EV">Electric vehicle</option>
+          <option value="MOTORCYCLE">Motorcycle</option>
+          <option value="ACCESSIBLE">Accessible permit</option>
+        </select>
+        <label>Bay</label>
+        <div class="bay-chip"><span id="inBay">Nearest suitable bay</span><button type="button" id="clearBay" hidden>Use nearest</button></div>
+        <fieldset class="pay-choice"><legend>Payment preference</legend>
+          <label><input type="radio" name="inPayment" value="offline" checked> Pay offline at the counter</label>
+          <label><input type="radio" name="inPayment" value="online"> Online payment assistance</label>
+          <div class="online-help" id="inOnlineHelp" hidden>
+            <strong>Online payment QR</strong>
+            <p style="margin:8px 0">Open your UPI app and scan the QR code below. Verify the payee and amount in your app before approving any payment.</p>
+            <img src="/payment-qr.jpeg" alt="Online payment QR code" style="display:block;width:min(100%,260px);height:auto;margin:12px auto;border:8px solid white;border-radius:12px;box-shadow:0 2px 12px #102a4320">
+            <p style="margin:8px 0">Need help? Contact <strong>8590326534</strong> on WhatsApp. This demo does not confirm or process payments automatically.</p>
+            <a href="https://wa.me/918590326534?text=Hello%2C%20I%20need%20help%20with%20Smart%20Parking%20payment." target="_blank" rel="noopener">Open WhatsApp</a>
+          </div>
+        </fieldset>
+        <button class="btn" type="submit">Check in</button>
+      </form>
+
+      <form id="formOut" data-form="out" autocomplete="off" hidden>
+        <h2>Check out and pay</h2>
+        <label for="outPlate">Licence plate</label>
+        <input type="text" id="outPlate" maxlength="10" placeholder="Plate of the parked vehicle" required>
+        <p class="hint" style="margin-top:10px">Or select an occupied bay on the map.</p>
+        <button class="btn" type="submit">Check out</button>
+      </form>
+
+      <form id="formReserve" data-form="reserve" autocomplete="off" hidden>
+        <h2>Reserve a bay</h2>
+        <label>Bay</label>
+        <div class="bay-chip"><span id="rsBay">Select a free bay on the map</span></div>
+        <label for="rsPlate">Licence plate</label>
+        <input type="text" id="rsPlate" maxlength="10" placeholder="e.g. TQX-482" required>
+        <label for="rsType">Vehicle type</label>
+        <select id="rsType">
+          <option value="CAR">Car</option>
+          <option value="EV">Electric vehicle</option>
+          <option value="MOTORCYCLE">Motorcycle</option>
+          <option value="ACCESSIBLE">Accessible permit</option>
+        </select>
+        <label for="rsMins">Hold the bay for</label>
+        <select id="rsMins">
+          <option value="15">15 minutes</option>
+          <option value="30" selected>30 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="120">2 hours</option>
+        </select>
+        <fieldset class="pay-choice"><legend>Payment preference</legend>
+          <label><input type="radio" name="rsPayment" value="offline" checked> Pay offline at the counter</label>
+          <label><input type="radio" name="rsPayment" value="online"> Online payment assistance</label>
+          <div class="online-help" id="rsOnlineHelp" hidden>Contact <strong>8590326534</strong> on WhatsApp to arrange online payment. This demo does not process real payments. <a href="https://wa.me/918590326534?text=Hello%2C%20I%20need%20help%20with%20Smart%20Parking%20reservation%20payment." target="_blank" rel="noopener">Open WhatsApp</a></div>
+        </fieldset>
+        <button class="btn" type="submit">Reserve bay</button>
+      </form>
+
+      <div id="receipt"></div>
+      <div class="selected" id="selected" aria-live="polite"></div>
+    </aside>
+  </div>
+
+  <section class="reports" aria-label="Garage report">
+    <h2>Today in the garage</h2>
+    <div class="stats" id="stats"></div>
+    <div class="fillbar" id="fillbar" role="img" aria-label="Garage occupancy"></div>
+    <div class="fillkey" id="fillkey"></div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Ticket</th><th>Plate</th><th>Bay</th><th>Left at</th><th class="num">Stayed</th><th class="num">Paid</th></tr></thead>
+        <tbody id="history"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '₹' + Number(n || 0).toFixed(2);
+const fmtDur = m => { const h = Math.floor(m / 60), r = m % 60; return h ? `${h} h ${String(r).padStart(2,'0')} min` : `${r} min`; };
+const fmtTime = ms => new Date(ms).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+const hue = str => { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+const TYPE_LABEL = {STANDARD:'Standard', EV:'EV charging', ACCESSIBLE:'Accessible', MOTORCYCLE:'Motorcycle'};
+const TYPE_MARK  = {STANDARD:'', EV:'⚡', ACCESSIBLE:'♿', MOTORCYCLE:'M'};
+const VEHICLE_LABEL = {CAR:'Car', EV:'Electric vehicle', MOTORCYCLE:'Motorcycle', ACCESSIBLE:'Accessible permit'};
+
+let state = null, floor = 'A', selected = null, mode = 'in';
+
+async function api(path, body) {
+  // Use the same origin that served this page, so the UI always talks to
+  // the currently running Java server (including when a different port is used).
+  let res;
+  try {
+    res = await fetch(new URL(path, window.location.origin), {
+      method: body ? 'POST' : 'GET',
+      headers: body ? {'Content-Type':'application/json', 'Accept':'application/json'} : {'Accept':'application/json'},
+      body: body ? JSON.stringify(body) : undefined,
+      cache: 'no-store'
+    });
+  } catch (err) {
+    throw new Error(`Cannot connect to ${window.location.origin}. Make sure the Java server is running and open this website from its localhost URL.`);
+  }
+  const raw = await res.text();
+  let data;
+  try { data = raw ? JSON.parse(raw) : {}; }
+  catch (_) { throw new Error(`Server returned an unexpected response for ${path}. Restart the Java server and refresh the page.`); }
+  if (!res.ok) throw new Error(data.error || `Request failed (HTTP ${res.status})`);
+  return data;
+}
+
+let toastTimer;
+function toast(msg, isError) {
+  const t = $('#toast');
+  t.textContent = msg; t.className = 'toast' + (isError ? ' error' : ''); t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 4500);
+}
+
+async function refresh() {
+  try { state = await api('/api/state'); render(); }
+  catch (e) { toast(e.message || 'Cannot connect to the garage server. Restart it and refresh this page.', true); console.error('Smart Parking API error:', e); }
+}
+
+/* ---------- rendering ---------- */
+function render() { renderSign(); renderFloors(); renderDeck(); renderSelected(); renderReports(); }
+
+function renderSign() {
+  const st = state.stats;
+  $('#signTotal').textContent = st.free;
+  $('#signTypes').innerHTML = Object.entries(st.byType).map(([t, v]) =>
+    `<div><span class="led-num">${v.free}</span><span class="lbl">${TYPE_LABEL[t]}</span></div>`).join('');
+  const busy = st.multiplier > 1;
+  $('#signNote').innerHTML =
+    `<span>${busy ? `<b>Busy rate: ${st.multiplier}× the hourly price</b> while the garage is over 80% full` : '<b>Standard rate</b> applies'}</span>` +
+    `<span>First ${st.freeMinutes} minutes free. Billed per started hour. Daily maximum ${money(st.dailyCap)}.</span>`;
+}
+
+function renderFloors() {
+  const floors = [...new Set(state.slots.map(s => s.floor))];
+  $('#floors').innerHTML = floors.map(f => {
+    const free = state.slots.filter(s => s.floor === f && s.status === 'free').length;
+    return `<button class="floor-tab" role="tab" data-floor="${f}" aria-selected="${f === floor}">Floor ${f}<small>${free} free</small></button>`;
+  }).join('');
+}
+
+function bayHTML(s) {
+  let body;
+  if (s.status === 'occupied') {
+    body = `<span class="car ${s.vehicle === 'MOTORCYCLE' ? 'moto' : ''}" style="--h:${hue(s.plate)}"></span>` +
+           `<span class="plate">${esc(s.plate)}</span><span class="meta">${fmtDur(s.minutes)}</span>`;
+  } else if (s.status === 'reserved') {
+    body = `<span class="plate">${esc(s.reservedFor)}</span><span class="meta">held until ${fmtTime(s.reservedUntil)}</span>`;
+  } else {
+    body = `<span class="free-mark">${TYPE_MARK[s.type]}</span><span class="meta">${s.type === 'STANDARD' ? '' : TYPE_LABEL[s.type]}</span>`;
+  }
+  return `<button class="bay ${s.status}${s.id === selected ? ' sel' : ''}" data-id="${s.id}" aria-pressed="${s.id === selected}" ` +
+         `aria-label="Bay ${s.id}, ${TYPE_LABEL[s.type]}, ${s.status}"><span class="led"></span>` +
+         `<span class="num">${String(s.number).padStart(2, '0')}</span>${body}</button>`;
+}
+
+function renderDeck() {
+  const list = state.slots.filter(s => s.floor === floor).sort((a, b) => a.number - b.number);
+  const half = Math.ceil(list.length / 2);
+  $('#deck').innerHTML =
+    `<div class="row upper">${list.slice(0, half).map(bayHTML).join('')}</div>` +
+    `<div class="aisle"><span>Driving lane, floor ${floor}</span></div>` +
+    `<div class="row lower">${list.slice(half).map(bayHTML).join('')}</div>`;
+}
+
+function selectedSlot() { return state && state.slots.find(s => s.id === selected); }
+
+function renderSelected() {
+  const s = selectedSlot(), box = $('#selected');
+  const free = s && s.status === 'free';
+  $('#inBay').textContent = free ? `Bay ${s.id} (${TYPE_LABEL[s.type].toLowerCase()})` : 'Nearest suitable bay';
+  $('#clearBay').hidden = !free;
+  $('#rsBay').textContent = free ? `Bay ${s.id} (${TYPE_LABEL[s.type].toLowerCase()})` : 'Select a free bay on the map';
+
+  if (!s) {
+    box.innerHTML = '<p class="hint">Select a bay on the map to see its details. If you don\'t pick one, check-in assigns the nearest suitable bay.</p>';
+    return;
+  }
+  let rows = `<dt>Type</dt><dd>${TYPE_LABEL[s.type]}</dd><dt>Status</dt><dd>${s.status[0].toUpperCase() + s.status.slice(1)}</dd>`;
+  let action = '';
+  if (s.status === 'occupied') {
+    rows += `<dt>Plate</dt><dd>${esc(s.plate)}</dd><dt>Vehicle</dt><dd>${VEHICLE_LABEL[s.vehicle]}</dd>` +
+            `<dt>Arrived</dt><dd>${fmtTime(s.since)}</dd><dt>Parked</dt><dd>${fmtDur(s.minutes)}</dd><dt>Fee so far</dt><dd>${money(s.estimatedFee)}</dd>`;
+  } else if (s.status === 'reserved') {
+    rows += `<dt>Held for</dt><dd>${esc(s.reservedFor)}</dd><dt>Until</dt><dd>${fmtTime(s.reservedUntil)}</dd>`;
+    action = `<button class="btn quiet" type="button" data-action="cancel">Cancel reservation</button>`;
+  }
+  box.innerHTML = `<h3>Bay ${s.id}</h3><dl>${rows}</dl>${action}`;
+}
+
+function renderReports() {
+  const st = state.stats;
+  $('#stats').innerHTML =
+    `<div><b>${st.occupancyPercent}%</b><span>of bays taken or held</span></div>` +
+    `<div><b>${st.vehiclesServedToday}</b><span>vehicles checked out today</span></div>` +
+    `<div><b>${money(st.revenueToday)}</b><span>collected today</span></div>` +
+    `<div><b>${fmtDur(st.averageStayMinutes)}</b><span>average stay today</span></div>`;
+  const pct = n => (100 * n / st.total).toFixed(1) + '%';
+  $('#fillbar').innerHTML =
+    `<i style="width:${pct(st.occupied)};background:var(--bay-busy)"></i>` +
+    `<i style="width:${pct(st.reserved)};background:var(--bay-held)"></i>`;
+  $('#fillkey').textContent = `${st.occupied} occupied, ${st.reserved} reserved, ${st.free} free of ${st.total} bays`;
+  $('#history').innerHTML = state.history.length ? state.history.map(r =>
+    `<tr><td>${r.ticket}</td><td>${esc(r.plate)}</td><td>${r.slotId}</td><td>${fmtTime(r.exit)}</td>` +
+    `<td class="num">${fmtDur(r.minutes)}</td><td class="num">${money(r.fee)}</td></tr>`).join('')
+    : '<tr><td colspan="6" class="empty">No vehicles have checked out yet today.</td></tr>';
+}
+
+function renderReceipt(r) {
+  const surge = r.multiplier > 1 ? `<dt>Busy rate</dt><dd>${r.multiplier}×</dd>` : '';
+  $('#receipt').innerHTML = `<div class="receipt"><h3>Receipt ${r.ticket}</h3><dl>` +
+    `<dt>Plate</dt><dd>${esc(r.plate)}</dd><dt>Bay</dt><dd>${r.slotId}</dd>` +
+    `<dt>Time parked</dt><dd>${fmtDur(r.minutes)}</dd><dt>Rate</dt><dd>${money(r.hourlyRate)} per hour</dd>${surge}` +
+    `<div class="total"><span>Total to pay</span><b>${money(r.fee)}</b></div></dl>` +
+    `<div class="payment-box"><h4>Online payment</h4>` +
+    `<p>Use the demo payment option to demonstrate checkout during your project presentation.</p>` +
+    `<div class="payment-actions"><button type="button" class="btn" id="demoPayBtn">Pay ${money(r.fee)} online</button>` +
+    `<a class="support-link" href="https://wa.me/918590323158" target="_blank" rel="noopener">Payment help: 8590323158</a></div>` +
+    `<p class="payment-note">College project demo only — no real payment is processed. For real UPI payments, configure a verified UPI ID or payment gateway.</p>` +
+    `<div id="paymentStatus" aria-live="polite"></div></div></div>`;
+  const payBtn = $('#demoPayBtn');
+  if (payBtn) payBtn.addEventListener('click', () => {
+    const status = $('#paymentStatus');
+    status.className = 'payment-success';
+    status.textContent = 'Demo payment successful. No money was transferred.';
+    payBtn.disabled = true;
+    payBtn.textContent = 'Demo payment completed';
+  });
+}
+
+/* ---------- interactions ---------- */
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === m));
+  document.querySelectorAll('[data-form]').forEach(f => f.hidden = f.dataset.form !== m);
+}
+
+document.querySelector('.seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (b) setMode(b.dataset.mode);
+});
+
+$('#floors').addEventListener('click', e => {
+  const b = e.target.closest('.floor-tab'); if (!b) return;
+  floor = b.dataset.floor; renderFloors(); renderDeck();
+});
+
+$('#deck').addEventListener('click', e => {
+  const b = e.target.closest('.bay'); if (!b) return;
+  selected = selected === b.dataset.id ? null : b.dataset.id;
+  const s = selectedSlot();
+  if (s && selected) {
+    if (s.status === 'occupied') { setMode('out'); $('#outPlate').value = s.plate; }
+    else if (s.status === 'free' && mode === 'out') setMode('in');
+    else if (s.status === 'reserved') setMode('in');
+  }
+  renderDeck(); renderSelected();
+});
+
+$('#clearBay').addEventListener('click', () => { selected = null; renderDeck(); renderSelected(); });
+
+$('#selected').addEventListener('click', async e => {
+  if (!e.target.closest('[data-action="cancel"]')) return;
+  try { await api('/api/cancel', {slotId: selected}); toast(`Reservation for bay ${selected} cancelled`); await refresh(); }
+  catch (err) { toast(err.message, true); }
+});
+
+document.querySelectorAll('input[name="inPayment"]').forEach(el => el.addEventListener('change', () => { $('#inOnlineHelp').hidden = document.querySelector('input[name="inPayment"]:checked').value !== 'online'; }));
+document.querySelectorAll('input[name="rsPayment"]').forEach(el => el.addEventListener('change', () => { $('#rsOnlineHelp').hidden = document.querySelector('input[name="rsPayment"]:checked').value !== 'online'; }));
+
+$('#formIn').addEventListener('submit', async e => {
+  e.preventDefault();
+  const s = selectedSlot();
+  try {
+    const r = await api('/api/checkin', {plate: $('#inPlate').value, vehicle: $('#inType').value, slotId: s && s.status === 'free' ? s.id : ''});
+    const paymentMode = document.querySelector('input[name="inPayment"]:checked').value;
+    toast(`${r.plate} checked in to bay ${r.slotId}. Payment: ${paymentMode === 'online' ? 'online assistance requested' : 'pay offline at counter'}`);
+    $('#inPlate').value = ''; $('#receipt').innerHTML = '';
+    floor = r.slotId[0]; selected = r.slotId;
+    await refresh();
+  } catch (err) { toast(err.message, true); }
+});
+
+$('#formOut').addEventListener('submit', async e => {
+  e.preventDefault();
+  try {
+    const r = await api('/api/checkout', {plate: $('#outPlate').value});
+    renderReceipt(r); toast(`${r.plate} checked out. Total ${money(r.fee)}`);
+    $('#outPlate').value = ''; selected = null;
+    await refresh();
+  } catch (err) { toast(err.message, true); }
+});
+
+$('#formReserve').addEventListener('submit', async e => {
+  e.preventDefault();
+  const s = selectedSlot();
+  if (!s || s.status !== 'free') { toast('Select a free bay on the map first.', true); return; }
+  try {
+    const r = await api('/api/reserve', {slotId: s.id, plate: $('#rsPlate').value, vehicle: $('#rsType').value, minutes: $('#rsMins').value});
+    const paymentMode = document.querySelector('input[name="rsPayment"]:checked').value;
+    toast(`Bay ${r.slotId} reserved for ${r.plate}. Payment: ${paymentMode === 'online' ? 'online assistance requested' : 'pay offline at counter'}`);
+    $('#rsPlate').value = '';
+    await refresh();
+  } catch (err) { toast(err.message, true); }
+});
+
+function tick() { $('#clock').textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+tick(); setInterval(tick, 10000);
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>

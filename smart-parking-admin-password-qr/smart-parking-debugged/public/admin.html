@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard | Harbor Street Garage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--ink:#102a43;--muted:#62748a;--bg:#f3f7fb;--card:#fff;--line:#e2eaf2;--teal:#0f766e;--navy:#102a43;--green:#15803d;--amber:#b45309;--red:#b91c1c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}header{background:linear-gradient(115deg,#102a43,#164e63 65%,#0f766e);color:#fff;padding:24px max(22px,calc((100% - 1180px)/2));display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}h1,h2,h3{font-family:Manrope,sans-serif;margin:0}h1{font-size:clamp(22px,3vw,30px);font-weight:800}header p{margin:7px 0 0;color:#d9e9f0}.back{color:white;text-decoration:none;border:1px solid #7da5b4;padding:10px 14px;border-radius:10px;font-weight:700}.wrap{max-width:1180px;margin:26px auto;padding:0 20px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:#a7f3d0}.sub{color:var(--muted);margin:7px 0 22px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 5px 20px #102a4308}.metric-label{font-size:13px;color:var(--muted);font-weight:700}.metric{font:800 30px Manrope,sans-serif;margin:12px 0 5px}.hint{font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--teal)}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:18px}.panel h2{font-size:18px;margin-bottom:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}.pill{display:inline-block;border-radius:30px;padding:5px 9px;font-size:11px;font-weight:800;background:#dcfce7;color:#166534}.pill.occupied{background:#fee2e2;color:#991b1b}.pill.reserved{background:#fef3c7;color:#92400e}.barrow{display:grid;grid-template-columns:100px 1fr 35px;gap:10px;align-items:center;margin:16px 0;font-size:13px}.bar{height:10px;background:#e7eef5;border-radius:20px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#0f766e,#2dd4bf);border-radius:20px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--teal);color:white;font-weight:800;cursor:pointer}.btn.secondary{background:#e5edf4;color:var(--navy)}.notice{padding:14px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:12px;color:#155e75;font-size:13px;line-height:1.5;margin-top:16px}.empty{padding:22px;text-align:center;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}@media(max-width:850px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}}@media(max-width:460px){.cards{grid-template-columns:1fr}.metric{font-size:26px}}
+
+.admin-login-screen{min-height:100vh;display:grid;place-items:center;padding:22px;background:linear-gradient(135deg,#eaf1f7,#f8fafc)}
+.admin-login-card{width:min(100%,420px);background:#fff;border:1px solid #dce7ef;border-radius:22px;padding:32px;box-shadow:0 24px 70px #102a4320;color:#102a43}
+.admin-login-mark{width:54px;height:54px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,#102a43,#0f766e);color:#fff;font-size:28px;font-weight:900;margin-bottom:18px}
+.admin-login-card h1{margin:0 0 8px}.admin-login-card p{color:#62748a;line-height:1.5}
+.admin-login-card label{display:block;font-weight:700;font-size:13px;margin:16px 0 7px}
+.admin-login-card input{width:100%;padding:13px;border:1px solid #cbd8e4;border-radius:10px;font-size:15px}
+.admin-login-card button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:10px;background:#0f766e;color:#fff;font-weight:800;cursor:pointer}
+#adminLoginError{min-height:20px;margin-top:10px;color:#b91c1c;font-size:13px}.admin-login-card small{display:block;text-align:center;color:#8292a4;margin-top:14px}
+
+</style></head><body>
+
+<section id="adminLoginScreen" class="admin-login-screen">
+  <form id="adminLoginForm" class="admin-login-card">
+    <div class="admin-login-mark">P</div>
+    <h1>Admin sign in</h1>
+    <p>Enter the password to access the Smart Parking dashboard.</p>
+    <label for="adminLoginPassword">Password</label>
+    <input id="adminLoginPassword" type="password" placeholder="Enter admin password" autocomplete="current-password" required>
+    <button type="submit">Sign in to dashboard</button>
+    <div id="adminLoginError" role="alert"></div>
+    <small>Smart Parking Management System</small>
+  </form>
+</section>
+<div id="adminContent" hidden>
+
+<header><div><div class="eyebrow">Operations control centre</div><h1>Admin Dashboard</h1><p>Harbor Street Garage · Live parking and revenue overview</p></div><a class="back" href="/">← Back to parking</a></header>
+<main class="wrap"><p class="sub">Monitor bay occupancy, reservations, vehicle activity and collected fees from one place.</p>
+<div class="cards"><div class="card"><div class="metric-label">Total parking bays</div><div class="metric" id="total">—</div><div class="hint">Across all floors</div></div><div class="card"><div class="metric-label"><span class="dot"></span>Available bays</div><div class="metric" id="free">—</div><div class="hint">Ready for vehicles</div></div><div class="card"><div class="metric-label">Occupied / reserved</div><div class="metric" id="busy">—</div><div class="hint">Currently unavailable</div></div><div class="card"><div class="metric-label">Recorded revenue</div><div class="metric" id="revenue">₹0.00</div><div class="hint">From completed checkouts</div></div></div>
+<div class="grid"><section class="panel"><h2>Occupancy overview</h2><div id="occupancy"></div><div class="notice">Figures refresh automatically every 10 seconds while the Java server is running. Revenue reflects completed checkouts recorded by this demo.</div><div class="actions"><button class="btn" onclick="loadData()">↻ Refresh now</button><a class="btn secondary" href="/">Open parking interface</a></div></section><section class="panel"><h2>Recent activity</h2><div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Bay</th><th>Status</th></tr></thead><tbody id="activity"><tr><td colspan="3" class="empty">Loading activity…</td></tr></tbody></table></div></section></div>
+<section class="panel" style="margin-top:18px"><h2>Parking bay status</h2><div class="table-wrap"><table><thead><tr><th>Bay</th><th>Floor</th><th>Type</th><th>Status</th><th>Vehicle</th></tr></thead><tbody id="bays"><tr><td colspan="5" class="empty">Loading bays…</td></tr></tbody></table></div></section><div id="error" class="notice" hidden></div></main><footer>Smart Parking Management System · Admin monitoring interface</footer>
+</div>
+<script>
+
+document.getElementById('adminLoginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const password = document.getElementById('adminLoginPassword').value;
+  if (password === '1234') {
+    document.getElementById('adminLoginScreen').hidden = true;
+    document.getElementById('adminContent').hidden = false;
+    document.getElementById('adminLoginError').textContent = '';
+    loadData();
+  } else {
+    document.getElementById('adminLoginError').textContent = 'Incorrect password. Please try again.';
+    document.getElementById('adminLoginPassword').value = '';
+    document.getElementById('adminLoginPassword').focus();
+  }
+});
+
+const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0);const esc=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path){const r=await fetch(path,{cache:'no-store'});const t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error('Unexpected server response. Please restart run.bat and refresh this page.')}if(!r.ok)throw Error(d.error||'Request failed: '+r.status);return d}
+async function loadData(){try{$('error').hidden=true;const s=await api('/api/state');const stats=s.stats||{};const slots=s.slots||s.bays||[];$('total').textContent=stats.total??slots.length;$('free').textContent=stats.free??slots.filter(x=>x.status==='free').length;$('busy').textContent=(stats.occupied??slots.filter(x=>x.status==='occupied').length)+' / '+(stats.reserved??slots.filter(x=>x.status==='reserved').length);$('revenue').textContent=money(stats.revenue??stats.totalRevenue??0);const types=stats.byType||{};let rows=Object.entries(types);if(rows.length){$('occupancy').innerHTML=rows.map(([k,v])=>{const total=Number(v.total)||0,free=Number(v.free)||0,pct=total?Math.round((total-free)/total*100):0;return `<div class="barrow"><strong>${esc(k)}</strong><div class="bar"><div class="fill" style="width:${pct}%"></div></div><span>${pct}%</span></div>`}).join('')}else{const total=slots.length,free=slots.filter(x=>x.status==='free').length,pct=total?Math.round((total-free)/total*100):0;$('occupancy').innerHTML=`<div class="barrow"><strong>All bays</strong><div class="bar"><div class="fill" style="width:${pct}%"></div></div><span>${pct}%</span></div>`}
+$('bays').innerHTML=slots.length?slots.map(x=>`<tr><td><strong>${esc(x.id??x.slotId)}</strong></td><td>${esc(x.floor??x.level??'—')}</td><td>${esc(x.type??x.slotType??'Standard')}</td><td><span class="pill ${esc(x.status)}">${esc(x.status)}</span></td><td>${esc(x.plate??x.vehiclePlate??'—')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">No bay data available.</td></tr>';
+let hist=[];try{const h=await api('/api/history');hist=Array.isArray(h)?h:(h.history||h.receipts||h.items||[])}catch(e){};$('activity').innerHTML=hist.length?hist.slice(0,10).map(x=>`<tr><td>${esc(x.plate??x.vehicle??x.vehiclePlate)}</td><td>${esc(x.slotId??x.bay??x.slot)}</td><td>${esc(x.status??'Completed')}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">No recent activity available yet.</td></tr>';
+}catch(e){$('error').hidden=false;$('error').textContent='Could not load admin data: '+e.message+' Ensure the Java server is running, then refresh.';console.error(e)}}setInterval(()=>{if(!document.getElementById('adminContent').hidden)loadData()},10000);
+</script></body></html>
